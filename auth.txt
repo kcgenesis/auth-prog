@@ -1,0 +1,4 @@
+PERMIT:kirk:file1
+DENY:alice:file1
+PERMIT:alice:file2
+DENY:kirk:file2

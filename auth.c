@@ -11,46 +11,45 @@
 
 */
 
-
-//void readIn()
-
 //clean newline
 void clean(char* str) {
 	int i;
 	for(i=0;i<sizeof str;i++){
 		if(str[i]=='\n'){
+			printf("removing newline\n");
 			str[i] = '\0';	
 		}
 	}
 }
 
+void parse(char* str, const char* delim,char fields[10][100]){
+	//printf("WE PARSING\n");	
+	char* token = strtok(str,delim);
+	
+	int i=0;
+	while(token != NULL){
+		strcpy(fields[i],token);
+		clean(fields[i]);
+		printf("field %d: %s\n",i,fields[i]);
+		token = strtok(NULL,delim);
+		i++;
+	}
+}
+
+
+
+
 //return 0 if user
 //return 1 if no match
 int isUser(char* name, char* pw,FILE* fp){
-	char readName[9];
-	char readPw[100];
 	char line[256];
-	int j;
-	int k;
+	
 	while(fgets(line,sizeof(line),fp)){
-		if(sizeof(line)>1){ //not just a newline 
-			j=0;
-			k=0;
-			while(line[j]!=':'){
-				readName[j] = line[j]; 
-				j++;
-			}
-			readName[j] = '\0';
-			j++;
-			while(line[j]!='\0'){
-				readPw[k] = line[j]; 
-				j++;
-				k++;
-			}
-			readPw[k]='\0';
+		if(sizeof(line)>1){ 
+			const char d[] = ":\r\n";
+			char fields[10][100];
+			parse(line,d,fields);
 			
-			clean(readName);
-			clean(readPw);
 			/* 
 				printf("Does it match?\n");
 				printf("name: %s\n",readName);
@@ -59,14 +58,13 @@ int isUser(char* name, char* pw,FILE* fp){
 				printf("name: %s\n",name);
 				printf("password: %s\n",pw);
 			 */
-			if ((strcmp(name,readName)==0)&&(strcmp(pw,readPw)==0)){
+			if ((strcmp(name,fields[0])==0)&&(strcmp(pw,fields[1])==0)){
 				return 0;
 			}
 		}
 	}
 	if(feof(fp)){
-			printf("\n\n");
-			printf("end of file reached successsfuly\n");
+			//printf("end of file reached successsfuly\n");
 			return 1;
 	}else{
 		fprintf(stderr,"read error\n");
@@ -75,9 +73,7 @@ int isUser(char* name, char* pw,FILE* fp){
 	
 }
 
-
-int main(){
-	
+int login(){
 	FILE* fp;
 	fp = fopen("users.txt","r");
 	if(fp==NULL){
@@ -88,7 +84,7 @@ int main(){
 	char pw[100];
 	int tries=1;
 	int auth = 0;
-	while((tries < 3)&&(auth==0)){	
+	while((tries <= 3)&&(auth==0)){	
 		printf("Enter name!\n");
 		fgets(name,sizeof(name),stdin);
 		//puts(name);
@@ -103,21 +99,25 @@ int main(){
 		clean(pw);
 		
 		if (isUser(name,pw,fp)==0){
+			auth =1;
 			break;
 		} else{
 			printf("Login incorrect!\n");
 			rewind(fp);
 		}
-		printf("You've used up try #%d\n\n",tries);
+		//printf("You've used up try #%d\n\n",tries);
 		tries++;
 	}
-	printf("Login success!\n");	
 	fclose(fp);
+	return auth;
+}
+
+
+int main(){
 	
-	
-	
-	
-	
+	if(login()==1){
+		
+	}
 	
 	
 	
