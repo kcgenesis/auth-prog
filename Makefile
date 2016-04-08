@@ -6,3 +6,5 @@ auth.exe: auth.o
 
 auth.o: auth.c
 	$(CC) $(CFLAGS) auth.c
+clean: 
+	rm *.o *.~ *.stackdump
