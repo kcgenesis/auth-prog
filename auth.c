@@ -3,13 +3,13 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-/*
+
 	typedef struct {
-	char name[8];
+	char name[9];
 	char pw[100];
 	} user;
 
-*/
+
 
 //clean newline
 void clean(char* str) {
@@ -23,14 +23,13 @@ void clean(char* str) {
 }
 
 void parse(char* str, const char* delim,char fields[10][100]){
-	//printf("WE PARSING\n");	
 	char* token = strtok(str,delim);
 	
 	int i=0;
 	while(token != NULL){
 		strcpy(fields[i],token);
 		clean(fields[i]);
-		printf("field %d: %s\n",i,fields[i]);
+		//printf("field %d: %s\n",i,fields[i]);
 		token = strtok(NULL,delim);
 		i++;
 	}
@@ -73,6 +72,7 @@ int isUser(char* name, char* pw,FILE* fp){
 	
 }
 
+//return user*
 int login(){
 	FILE* fp;
 	fp = fopen("users.txt","r");
@@ -87,12 +87,14 @@ int login(){
 	while((tries <= 3)&&(auth==0)){	
 		printf("Enter name!\n");
 		fgets(name,sizeof(name),stdin);
-		//puts(name);
-		//turn echo off if possible
-		//ncurses?
-		//http://forums.fedoraforum.org/showthread.php?t=270335
-		//examples
-		//http://www.cplusplus.com/articles/E6vU7k9E/
+		/*
+			puts(name);
+			turn echo off if possible
+			ncurses?
+			http://forums.fedoraforum.org/showthread.php?t=270335
+			examples
+			http://www.cplusplus.com/articles/E6vU7k9E/		
+		*/
 		printf("Enter password!\n");
 		fgets(pw,sizeof(pw),stdin);
 		clean(name);
@@ -114,9 +116,9 @@ int login(){
 
 
 int main(){
-	
+	//
 	if(login()==1){
-		
+		printf("ur logged in now.\n");
 	}
 	
 	
