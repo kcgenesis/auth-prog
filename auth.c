@@ -35,7 +35,7 @@ void parse(char* str, const char* delim,char fields[10][100]){
 	int j=0;//word char
 	int k=0;//wordnum
 	int STATE=0;
-	printf("the length is %d\n",strlen(str));
+	//printf("the length is %d\n",strlen(str));
 
 	for(i=0;i<strlen(str);i++){
 		if(str[i]==*delim){	
@@ -56,20 +56,12 @@ void parse(char* str, const char* delim,char fields[10][100]){
 			}
 		}
 	}
-	int m;
-	for(m=0;m<3;m++){
-		printf("field %d: %s\n",m+1,fields[m]);	
-	}
-	
-	/*char* token = strtok(str,delim);
-	int i=0;
-	while(token != NULL){
-		strcpy(fields[i],token);
-		//clean(fields[i]);
-		//
-		token = strtok(NULL,delim);
-		i++;
-	}*/
+	/*
+		int m;
+		for(m=0;m<3;m++){
+			printf("field %d: %s\n",m+1,fields[m]);	
+		}
+	*/
 }
 
 
@@ -192,7 +184,7 @@ user* login(user* usr){
 //return 1 if not	
 int isAuthorized(user* usr,char* fname,FILE* fp){
 	char line[256];
-	int i;
+	
 	while(fgets(line,sizeof(line),fp)){
 		if(strlen(line)>1){ 
 			const char d[] = ":\r\n";
@@ -214,15 +206,15 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 
 
 
-			if ((strcmp(usr->name,fields[1])==0)||(strcmp("",fields[1])==0)){
-				printf("matched username/wildcard\n");
-				if ((strcmp(fname,fields[2])==0)||(strcmp("",fields[2])==0)){
-					printf("matched filename/wildcard\n");
+			if ((strcmp(usr->name,fields[1])==0)||(strlen(fields[1])==0)){
+				//printf("matched username/wildcard\n");
+				if ((strcmp(fname,fields[2])==0)||(strlen(fields[2])==0)){
+					//printf("matched filename/wildcard\n");
 					if(strcmp("PERMIT",fields[0])==0){
-						printf("permitted\n");
+						//printf("permitted\n");
 						return 0;
 					}else if(strcmp("DENY",fields[0])==0){
-						printf("denied\n");
+						//printf("denied\n");
 						return 1;
 					}else{
 						//printf("No permission found: denied\n");
@@ -277,17 +269,20 @@ void readFile(user* usr){
 	while(fgets(line,sizeof(line),stdin)){
 		if(strlen(line)>1){
 			strtok(line,"\n");
-		} else {
+			if(fopen(line,"r")==NULL){
+				printf("the file '%s' does not exist! try again\n",line);
+			}else{
+				if(isAuthorized(usr,line,fp)==0){
+					printFile(line);
+				}else{
+					printf("Access to file %s denied\n",line);
+				}
+				printf("enter file path:\n");
+				rewind(fp);
+			}
+		}else {
 			printf("no input! try again\n");
-			readFile(usr);
 		}
-		if(isAuthorized(usr,line,fp)==0){
-			printFile(line);
-		}else{
-			printf("Access to file %s denied\n",line);
-		}
-		printf("enter file path:\n");
-		rewind(fp);
 	}
 	printf("EOF read: exiting\n");
 	fclose(fp);
