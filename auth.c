@@ -23,16 +23,53 @@ void clean(char* str) {
 }
 
 void parse(char* str, const char* delim,char fields[10][100]){
-	char* token = strtok(str,delim);
 	
+	int n;
+	for(n=0;n<10;n++){
+		fields[n][0] = '\0';
+	}
+	strtok(str,"\r\n");
+
+
+	int i; //str char
+	int j=0;//word char
+	int k=0;//wordnum
+	int STATE=0;
+	printf("the length is %d\n",strlen(str));
+
+	for(i=0;i<strlen(str);i++){
+		if(str[i]==*delim){	
+			if(STATE==1){
+				STATE=0;
+				fields[k][j]='\0';
+			}
+			k++;
+		}else{
+			if(STATE==0){
+				STATE=1;
+				j=0;
+			}
+			fields[k][j] = str[i];
+			j++;
+			if(str[i+1]=='\0'){
+				fields[k][j] = '\0';
+			}
+		}
+	}
+	int m;
+	for(m=0;m<3;m++){
+		printf("field %d: %s\n",m+1,fields[m]);	
+	}
+	
+	/*char* token = strtok(str,delim);
 	int i=0;
 	while(token != NULL){
 		strcpy(fields[i],token);
-		clean(fields[i]);
-		//printf("field %d: %s\n",i,fields[i]);
+		//clean(fields[i]);
+		//
 		token = strtok(NULL,delim);
 		i++;
-	}
+	}*/
 }
 
 
@@ -42,12 +79,11 @@ void parse(char* str, const char* delim,char fields[10][100]){
 //return 1 if no match
 int isUser(user* usr,FILE* fp){
 	char line[256];
-	
 	while(fgets(line,sizeof(line),fp)){
 		if(sizeof(line)>1){ 
-			const char d[] = ":\r\n";
+			const char d = ':';
 			char fields[10][100];
-			parse(line,d,fields);
+			parse(line,&d,fields);
 			
 			/* 
 				printf("Does it match?\n");
@@ -84,12 +120,12 @@ void enterinfo(user* usr){
 	
 	strtok(usr->name,"\n");
 
-	printf("length is %d\n",strlen(usr->name));
+	//printf("length is %d\n",strlen(usr->name));
 	if(strlen(usr->name)==0){
 		printf("no input! try again\n");
 		enterinfo(usr);
 	}else if(strlen(usr->name)>=8){
-		printf("username size %d too long! try again\n",strlen(usr->name));
+		//printf("username size %d too long! try again\n",strlen(usr->name));
 		enterinfo(usr);
 	}
 
@@ -97,7 +133,7 @@ void enterinfo(user* usr){
 	printf("Enter password!\n");
 	fgets(usr->pw,sizeof(usr->pw),stdin);
 	strtok(usr->pw,"\n");
-	printf("length is %d\n",strlen(usr->pw));
+	//printf("length is %d\n",strlen(usr->pw));
 	if(strlen(usr->pw)==0){
 		printf("no input! try again\n");
 		enterinfo(usr);
@@ -119,15 +155,9 @@ user* login(user* usr){
 		fprintf(stderr, "Can't open input file users.txt!\n");
 		exit(1);
 	}
-	//char name[9];
-	//char pw[100];
-	//char info[2][100];
 	int tries=1;
 	int auth = 0;
 	while((tries <= 3)&&(auth==0)){	
-		
-		//printf("Enter name!\n");
-		//fgets(name,sizeof(name),stdin);
 		
 		/*
 			puts(name);
@@ -138,26 +168,8 @@ user* login(user* usr){
 			http://www.cplusplus.com/articles/E6vU7k9E/		
 		*/
 		
-		//printf("Enter password!\n");
-		//fgets(pw,sizeof(pw),stdin);
 		
 		enterinfo(usr);
-
-
-
-		//clean(name);
-		//clean(pw);
-		//if (isUser(name,pw,fp)==0){
-
-		//printf("user info recieved:\n");
-
-		//strcpy(usr->name,info[0]);
-		//strcpy(usr->pw,info[1]);
-
-		//printf("%s\n",usr->name);
-		//printf("%s\n", usr->pw);
-
-
 
 		if (isUser(usr,fp)==0){
 			auth=1;
@@ -186,33 +198,44 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 			const char d[] = ":\r\n";
 			char fields[10][100];
 			parse(line,d,fields);
+			/*
 			for(i=0;i<3;i++){
 				printf("field[%d]: %s\n",i,fields[i]);
 			}
+			*/
+			//no permission specified -> deny permission
+			//first rule parsed is the rule which will be applied
+			
+			if (strlen(fields[2])==0){
+				//printf("USER wildcard detected\n");
+			}else if(strlen(fields[1])==0){
 
-			/*
-			if ((strcmp(usr->name,fields[2])==0)||(strcmp("",fields[2])==0)){
+			}
+
+
+
+			if ((strcmp(usr->name,fields[1])==0)||(strcmp("",fields[1])==0)){
 				printf("matched username/wildcard\n");
-				if ((strcmp(fname,fields[3])==0)||(strcmp("",fields[3])==0)){
+				if ((strcmp(fname,fields[2])==0)||(strcmp("",fields[2])==0)){
 					printf("matched filename/wildcard\n");
 					if(strcmp("PERMIT",fields[0])==0){
 						printf("permitted\n");
-						return 1;
-					}else if(strcmp("PERMIT",fields[0])==0){
+						return 0;
+					}else if(strcmp("DENY",fields[0])==0){
 						printf("denied\n");
 						return 1;
 					}else{
-						printf("incorrect ACL format: denied\n");
+						//printf("No permission found: denied\n");
 						return 1;
 					}
 				}
 			}
-			*/
+			
 		}
 	}
 	if(feof(fp)){
 			//printf("end of file reached successsfuly\n");
-			printf("not found in ACL: denied\n");
+			//printf("not found in ACL: denied\n");
 			return 1;
 	}else{
 		fprintf(stderr,"read error\n");
@@ -220,26 +243,51 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 	}
 }
 
+void printFile(char* fname){
+	FILE* fp;
+	const char* name = fname;
+	fp = fopen(name,"r");
+	if(fp==NULL){
+		fprintf(stderr, "Can't open input file %s!\n",fname);
+		exit(1);
+	}
+	printf("--------BEGIN '%s'--------\n",fname);
+	char line[256];
+	while(fgets(line,sizeof(line),fp)){
+		printf("%s",line);
+	}
+	if(!feof(fp)){
+		fprintf(stderr,"read error\n");
+		exit(1);
+	}
+	printf("\n--------END '%s'--------\n",fname);
+	fclose(fp);
+}
 
 
 void readFile(user* usr){
 	FILE* fp;
 	fp = fopen("auth.txt","r");
+	if(fp==NULL){
+		fprintf(stderr, "Can't open input file auth.txt!\n");
+		exit(1);
+	}
 	char line[256];
 	printf("enter file path:\n");
 	while(fgets(line,sizeof(line),stdin)){
 		if(strlen(line)>1){
-			strtok(usr->name,"\n");
+			strtok(line,"\n");
 		} else {
 			printf("no input! try again\n");
 			readFile(usr);
 		}
 		if(isAuthorized(usr,line,fp)==0){
-			
+			printFile(line);
 		}else{
 			printf("Access to file %s denied\n",line);
 		}
 		printf("enter file path:\n");
+		rewind(fp);
 	}
 	printf("EOF read: exiting\n");
 	fclose(fp);
@@ -249,21 +297,12 @@ void readFile(user* usr){
 
 
 int main(){
-	//
 	user myuser;
 	if(login(&myuser)!=NULL){
-		printf("ur logged in now.\n");
 		readFile(&myuser);
-
 	} else{
 		printf("3 tries used: exiting\n");
 	}
-	
-	
-	
-	
-	
-	
 	return 0;
 } 
 

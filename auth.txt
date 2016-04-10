@@ -1,4 +1,7 @@
-PERMIT:kirk:file1
-DENY:alice:file1
-PERMIT:alice:file2
-DENY:kirk:file2
+PERMIT::file1.txt
+DENY:bobby:
+PERMIT:bill:
+PERMIT:kirk:file1.txt
+DENY:alice:file1.txt
+PERMIT:alice:file2.txt
+DENY:kirk:file2.txt
