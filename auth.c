@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 	typedef struct {
-	char name[9];
+	char name[100];
 	char pw[100];
 	} user;
 
@@ -72,21 +72,63 @@ int isUser(char* name, char* pw,FILE* fp){
 	
 }
 
-//return user*
-int login(){
+
+
+
+
+void enterinfo(char fields[2][100]){
+	//fields[0]=name
+	//fields[1]=pw
+	printf("Enter name!\n");
+	fgets(fields[0],sizeof(fields[0]),stdin);
+	
+	strtok(fields[0],"\n");
+
+	//printf("length is %d\n",strlen(fields[0]));
+	if(strlen(fields[0])<=1){
+		printf("no input! try again\n");
+		enterinfo(fields);
+	}else if(strlen(fields[0])>=9){
+		printf("username size %d too long! try again\n",strlen(fields[0]));
+		enterinfo(fields);
+	}
+
+
+	printf("Enter password!\n");
+	fgets(fields[1],sizeof(fields[1]),stdin);
+	strtok(fields[1],"\n");
+
+	if(strlen(fields[1])<=1){
+		printf("no input! try again\n");
+		enterinfo(fields);
+	}
+
+}
+
+
+
+
+
+
+
+//return user* 
+user* login(user* usr){
 	FILE* fp;
 	fp = fopen("users.txt","r");
 	if(fp==NULL){
 		fprintf(stderr, "Can't open input file users.txt!\n");
 		exit(1);
 	}
-	char name[9];
-	char pw[100];
+	//char name[9];
+	//char pw[100];
+	char info[2][100];
 	int tries=1;
 	int auth = 0;
 	while((tries <= 3)&&(auth==0)){	
-		printf("Enter name!\n");
-		fgets(name,sizeof(name),stdin);
+		
+		//printf("Enter name!\n");
+		//fgets(name,sizeof(name),stdin);
+		
 		/*
 			puts(name);
 			turn echo off if possible
@@ -95,12 +137,34 @@ int login(){
 			examples
 			http://www.cplusplus.com/articles/E6vU7k9E/		
 		*/
-		printf("Enter password!\n");
-		fgets(pw,sizeof(pw),stdin);
-		clean(name);
-		clean(pw);
 		
-		if (isUser(name,pw,fp)==0){
+		//printf("Enter password!\n");
+		//fgets(pw,sizeof(pw),stdin);
+		
+		enterinfo(info);
+
+
+
+		//clean(name);
+		//clean(pw);
+		//if (isUser(name,pw,fp)==0){
+
+		printf("user info recieved:\n");
+
+		strcpy(usr->name,info[0]);
+		strcpy(usr->pw,info[1]);
+
+
+
+
+		printf("%s\n",info[0] );
+		printf("%s\n", info[1]);
+		printf("%s\n",usr->name );
+		printf("%s\n", usr->pw);
+
+
+
+		if (isUser(info[0],info[1],fp)==0){
 			auth =1;
 			break;
 		} else{
@@ -117,7 +181,8 @@ int login(){
 
 int main(){
 	//
-	if(login()==1){
+	user myuser;
+	if(login(&myuser)==1){
 		printf("ur logged in now.\n");
 	}
 	
