@@ -4,11 +4,10 @@
 #include <termios.h>
 #include <unistd.h>
 
-	typedef struct {
-	char name[100];
-	char pw[100];
-	} user;
-
+typedef struct {
+char name[100];
+char pw[100];
+} user;
 
 
 //clean newline
@@ -107,30 +106,33 @@ int isUser(user* usr,FILE* fp){
 void enterinfo(user* usr){
 	//fields[0]=name
 	//fields[1]=pw
-	printf("Enter name!\n");
-	fgets(usr->name,sizeof(usr->name),stdin);
 	
-	strtok(usr->name,"\n");
 
-	//printf("length is %d\n",strlen(usr->name));
-	if(strlen(usr->name)==0){
-		printf("no input! try again\n");
-		enterinfo(usr);
-	}else if(strlen(usr->name)>=8){
-		//printf("username size %d too long! try again\n",strlen(usr->name));
-		enterinfo(usr);
+	//printf("length is %d\n",(int)strlen(usr->name));
+	int valid=0;
+	while(valid==0){
+		printf("Enter name!\n");
+		fgets(usr->name,sizeof(usr->name),stdin);
+		strtok(usr->name,"\n");
+		//printf("Username length: %d\n",(int)strlen(usr->name));
+		if(strcmp(usr->name,"\n")==0){
+			printf("No input! try again\n");
+		}else if(strlen(usr->name)>8){
+			printf("Username length %d too long! try again\n",(int)strlen(usr->name));
+		}else {
+			//printf("Enter password:\n");
+   			strcpy(usr->pw,getpass("Enter password:\n"));
+   			//usr->pw[0] = mypw;
+			//fgets(usr->pw,sizeof(usr->pw),stdin);
+			strtok(usr->pw,"\n");
+			//printf("Password length: %d\n",(int)strlen(usr->pw));
+			if(strlen(usr->pw)==0){
+				printf("No input! try again\n");
+			}else{
+				valid++;
+			}
+		}
 	}
-
-
-	printf("Enter password!\n");
-	fgets(usr->pw,sizeof(usr->pw),stdin);
-	strtok(usr->pw,"\n");
-	//printf("length is %d\n",strlen(usr->pw));
-	if(strlen(usr->pw)==0){
-		printf("no input! try again\n");
-		enterinfo(usr);
-	}
-
 }
 
 
