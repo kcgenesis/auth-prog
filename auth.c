@@ -175,6 +175,7 @@ user* login(user* usr){
 	}
 	if(auth==0){
 		usr = NULL; 
+		printf("3 tries used: exiting\n");
 	}
 	fclose(fp);
 	return usr;
@@ -295,8 +296,6 @@ int main(){
 	user myuser;
 	if(login(&myuser)!=NULL){
 		readFile(&myuser);
-	} else{
-		printf("3 tries used: exiting\n");
 	}
 	return 0;
 } 
