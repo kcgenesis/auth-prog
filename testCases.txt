@@ -9,32 +9,103 @@ bobby:pwbobby
 alice:pwalice
 ----------------end users.txt----------------
 
+test case 1: very wrong logins: input checking
 
-test case 0: bad logins
-
->invalid name
->valid pw
-
->valid name
->invalid pw
-
+INPUT:
 >excessively long name
 
->no name
-----------------begin stdout----------------
+aaaaaaaa
 
+>borderline good name
+aaaaaaaa
+>no password
+
+>asdf's to exit
+
+OUTPUT:
+----------------begin stdout----------------
+Enter name!
+aaaaaaaaa
+Username length 9 too long! try again
+Enter name!
+aaaaaaaa
+Enter password:
+
+No input! try again
+Enter name!
+asdf
+Enter password:
+
+Login incorrect!
+Enter name!
+asdf
+Enter password:
+
+Login incorrect!
+Enter name!
+asdf
+Enter password:
+
+Login incorrect!
+3 tries used: exiting
+----------------end stdout----------------
+
+test case 2: wrong logins
+
+INPUT:
+>wrong username
+kirk
+pwbill
+kirk
+pwalice
+>valid username
+>wrong pw
+bill
+pwalice
+
+OUTPUT:
+----------------begin stdout----------------
+Enter name!
+kirk
+Enter password:
+
+Login incorrect!
+Enter name!
+kirk
+Enter password:
+
+Login incorrect!
+Enter name!
+bill
+Enter password:
+
+Login incorrect!
+3 tries used: exiting
+----------------end stdout----------------
+
+test case 3: file name input checking
+
+----------------begin stdout----------------
+Enter name!
+alice
+Enter password:
+
+enter file path:
+asdf
+the file 'asdf' does not exist! try again
+ff
+the file 'ff' does not exist! try again
+aa
+the file 'aa' does not exist! try again
+
+no input! try again
+EOF read: exiting
 ----------------end stdout----------------
 
 
 
 
-
-
-
-
-
-
-test case 1: contradiction-free ACL
+test case 4: contradiction-free ACL
 ----------------begin auth.txt----------------
 PERMIT:bobby:file1.txt
 DENY:alice:file1.txt
@@ -53,8 +124,8 @@ Logging in as Alice:
 ----------------begin stdout----------------
 Enter name!
 alice
-Enter password!
-pwalice
+Enter password:
+
 enter file path:
 file1.txt
 Access to file file1.txt denied
@@ -78,8 +149,8 @@ Logging in as Bobby:
 ----------------begin stdout----------------
 Enter name!
 bobby
-Enter password!
-pwbobby
+Enter password:
+
 enter file path:
 file1.txt
 --------BEGIN 'file1.txt'--------
@@ -102,8 +173,8 @@ Logging in as Joe
 ----------------begin stdout----------------
 Enter name!
 joe
-Enter password!
-pwjoe
+Enter password:
+
 enter file path:
 file1.txt
 Access to file file1.txt denied
@@ -122,8 +193,8 @@ Logging in as Bill
 ----------------begin stdout----------------
 Enter name!
 bill
-Enter password!
-pwbill
+Enter password:
+
 enter file path:
 file1.txt
 Access to file file1.txt denied
@@ -138,7 +209,8 @@ EOF read: exiting
 ----------------end stdout----------------
 
 
-test case 1: wildcards & first-rule precedent
+test case 5: wildcards & first-rule precedent
+
 --------begin auth.txt--------
 PERMIT::file1.txt
 DENY:bobby:
@@ -146,12 +218,114 @@ PERMIT:bill:
 --------end auth.txt--------
 
 EXPECTATION:
-Alice and Bobby should be able to access file1.txt.  Since Alice and Bobby are not mentioned in the rest of the ACL, Alice and Bobby are denied access to file2 and file3.
+Alice should be able to access file1.txt, but not file2.txt or file3.txt.
+Joe should be able to access file1.txt, but not file2.txt or file3.txt.
 Bobby should be able to access file1.txt (since the first rule takes precedence), but he should not be able to access file2.txt and file3.txt.
-Bill should be able to access all files.
+Bill should be able to access file1.txt, file2.txt, and file3.txt.
 
 PROGRAM OUTPUT:
 
+Logging in as Alice:
+----------------begin stdout----------------
+Enter name!
+alice
+Enter password:
+
+enter file path:
+file1.txt
+--------BEGIN 'file1.txt'--------
+the content of file1the content of file1
+the content of file1the content of file1
+the content of file1the content of file1
+--------END 'file1.txt'--------
+enter file path:
+file2.txt
+Access to file file2.txt denied
+enter file path:
+file3.txt
+Access to file file3.txt denied
+enter file path:
+EOF read: exiting
+----------------end stdout----------------
+
+Logging in as Joe:
+----------------begin stdout----------------
+Enter name!
+joe
+Enter password:
+
+enter file path:
+file1.txt
+--------BEGIN 'file1.txt'--------
+the content of file1the content of file1
+the content of file1the content of file1
+the content of file1the content of file1
+--------END 'file1.txt'--------
+enter file path:
+file2.txt
+Access to file file2.txt denied
+enter file path:
+file3.txt
+Access to file file3.txt denied
+enter file path:
+EOF read: exiting
+----------------end stdout----------------
+
+
+Logging in as Bobby:
+----------------begin stdout----------------
+Enter name!
+bobby
+Enter password:
+
+enter file path:
+file1.txt
+--------BEGIN 'file1.txt'--------
+the content of file1the content of file1
+the content of file1the content of file1
+the content of file1the content of file1
+--------END 'file1.txt'--------
+enter file path:
+file2.txt
+Access to file file2.txt denied
+enter file path:
+file3.txt
+Access to file file3.txt denied
+enter file path:
+EOF read: exiting
+----------------end stdout----------------
+
+
+Logging in as Bill:
+----------------begin stdout----------------
+Enter name!
+bill
+Enter password:
+
+enter file path:
+file1.txt
+--------BEGIN 'file1.txt'--------
+the content of file1the content of file1
+the content of file1the content of file1
+the content of file1the content of file1
+--------END 'file1.txt'--------
+enter file path:
+file2.txt
+--------BEGIN 'file2.txt'--------
+the content of file2the content of file2
+the content of file2the content of file2
+the content of file2the content of file2
+--------END 'file2.txt'--------
+enter file path:
+file3.txt
+--------BEGIN 'file3.txt'--------
+the content of file3the content of file3
+the content of file3the content of file3
+the content of file3the content of file3
+--------END 'file3.txt'--------
+enter file path:
+EOF read: exiting
+----------------end stdout----------------
 
 
 
