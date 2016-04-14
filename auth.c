@@ -21,6 +21,8 @@ void clean(char* str) {
 	}
 }
 
+//parse string by delim.
+//if there are multiple sequential delims, empty string fields are created for each delim.
 void parse(char* str, const char* delim,char fields[10][100]){
 	
 	int n;
@@ -68,7 +70,13 @@ void parse(char* str, const char* delim,char fields[10][100]){
 
 //return 0 if user
 //return 1 if no match
-int isUser(user* usr,FILE* fp){
+int isUser(user* usr){
+	FILE* fp;
+	fp = fopen("users.txt","r");
+	if(fp==NULL){
+		fprintf(stderr, "Can't open input file users.txt!\n");
+		exit(1);
+	}
 	char line[256];
 	while(fgets(line,sizeof(line),fp)){
 		if(sizeof(line)>1){ 
@@ -85,30 +93,24 @@ int isUser(user* usr,FILE* fp){
 				printf("password: %s\n",pw);
 			 */
 			if ((strcmp(usr->name,fields[0])==0)&&(strcmp(usr->pw,fields[1])==0)){
+				fclose(fp);
 				return 0;
 			}
 		}
 	}
 	if(feof(fp)){
-			//printf("end of file reached successsfuly\n");
+			fclose(fp);
 			return 1;
 	}else{
 		fprintf(stderr,"read error\n");
+		fclose(fp);
 		exit(1);
 	}
 	
 }
 
-
-
-
-
+//fill usr struct with usr info
 void enterinfo(user* usr){
-	//fields[0]=name
-	//fields[1]=pw
-	
-
-	//printf("length is %d\n",(int)strlen(usr->name));
 	int valid=0;
 	while(valid==0){
 		printf("Enter name!\n");
@@ -122,8 +124,6 @@ void enterinfo(user* usr){
 		}else {
 			//printf("Enter password:\n");
    			strcpy(usr->pw,getpass("Enter password:\n"));
-   			//usr->pw[0] = mypw;
-			//fgets(usr->pw,sizeof(usr->pw),stdin);
 			strtok(usr->pw,"\n");
 			//printf("Password length: %d\n",(int)strlen(usr->pw));
 			if(strlen(usr->pw)==0){
@@ -136,23 +136,13 @@ void enterinfo(user* usr){
 }
 
 
-
-
-
-
-
-//return user* 
+//if login fail, return null user
+//if login success, return filled usr struct
 user* login(user* usr){
-	FILE* fp;
-	fp = fopen("users.txt","r");
-	if(fp==NULL){
-		fprintf(stderr, "Can't open input file users.txt!\n");
-		exit(1);
-	}
+	
 	int tries=1;
 	int auth = 0;
 	while((tries <= 3)&&(auth==0)){	
-		
 		/*
 			puts(name);
 			turn echo off if possible
@@ -161,16 +151,13 @@ user* login(user* usr){
 			examples
 			http://www.cplusplus.com/articles/E6vU7k9E/		
 		*/
-		
-		
 		enterinfo(usr);
 
-		if (isUser(usr,fp)==0){
+		if (isUser(usr)==0){
 			auth=1;
 			break;
 		} else{
 			printf("Login incorrect!\n");
-			rewind(fp);
 		}
 		//printf("You've used up try #%d\n\n",tries);
 		tries++;
@@ -179,11 +166,10 @@ user* login(user* usr){
 		usr = NULL; 
 		printf("3 tries used: exiting\n");
 	}
-	fclose(fp);
 	return usr;
 }
 
-//return 0 if authorized
+//return 0 if authorized by ACL
 //return 1 if not	
 int isAuthorized(user* usr,char* fname,FILE* fp){
 	char line[256];
@@ -238,6 +224,7 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 	}
 }
 
+//print specified file
 void printFile(char* fname){
 	FILE* fp;
 	const char* name = fname;
@@ -259,7 +246,10 @@ void printFile(char* fname){
 	fclose(fp);
 }
 
-
+//enter readFile user interface
+//if user is authorized, print file.
+//if not, deny access.
+//return 1 to exit outer loop.
 void readFile(user* usr){
 	FILE* fp;
 	fp = fopen("auth.txt","r");
@@ -287,18 +277,126 @@ void readFile(user* usr){
 			printf("no input! try again\n");
 		}
 	}
-	printf("EOF read: exiting\n");
+	printf("EOF read: exiting to main menu\n");
 	fclose(fp);
+}
+
+//return 1 if file ends with a newline.
+//return 0 if not.
+//return 2 if error.
+int newlined(char* fname){
+	FILE* fp;
+	fp = fopen(fname,"r");
+	if(fp==NULL){
+		fprintf(stderr, "Can't open input file users.txt!\n");
+		exit(1);
+	}
+	int nlflag;
+	char line[256];
+	while(fgets(line,sizeof(line),fp)){
+		if(sizeof(line)>1){ 
+			nlflag = 0;
+		}else{
+			nlflag=1;
+		}
+	}
+	if(feof(fp)){
+		fclose(fp);
+		if(nlflag==0){
+			return 0;
+		}else if(nlflag==1){
+			return 1;
+		}else{
+			printf("error!\n");
+			return 2;
+		}
+	}else{
+		fprintf(stderr,"read error\n");
+		fclose(fp);
+		return 2;
+		exit(1);
+	}
+}
+
+
+
+
+
+//given a user struct, add users to users.txt.
+//assumes that the user struct is not already a user.
+int addUser(user* usr){
+	FILE* fp;
+	fp = fopen("users.txt","a");
+	if(fp==NULL){
+		fprintf(stderr, "Can't open input file users.txt!\n");
+		exit(1);
+	}
+	char line[256];
+	line[0] = '\0';
+	if(newlined("users.txt")){
+		strcat(line,"\n");
+	}
+	strcat(line,usr->name);
+	strcat(line,":");
+	strcat(line,usr->pw);
+	strcat(line,"\n");
+	
+	fputs(line,fp);
+	fclose(fp);
+	return 0;
+}
+
+
+//make usr.
+//return 1 if usr already exists
+//return 0 if usr created successfully
+//return 2 if error
+int mkUser(user* usr){
+	enterinfo(usr);	
+	int test = isUser(usr);
+	if(test==0){
+		printf("This user already exists! Exiting.\n");
+		return 1;
+	}else if(test==1){
+		addUser(usr);
+		printf("User added successfully!\n");
+		return 0;
+	}else{
+		printf("Error: we should never get here!\n");
+		return 2;
+		exit(1);
+	}
 }
 
 
 
 
 int main(){
+	printf("Welcome to Some Files, Inc!\n");
+	printf("Press 1 to make an account.\n");
+	printf("Press 2 to Sign in to access Some Files.\n");
+	printf("Press ctrl+D to exit.\n");
+	char instr[256];
 	user myuser;
-	if(login(&myuser)!=NULL){
-		readFile(&myuser);
+	while(fgets(instr,sizeof(instr),stdin)){
+		strtok(instr,"\n");
+		//printf("Username length: %d\n",(int)strlen(instr));
+		if(strcmp(instr,"\n")==0){
+			printf("No input! try again\n");
+		}else if(strcmp(instr,"1")==0){
+			mkUser(&myuser);	
+		}else if(strcmp(instr,"2")==0){
+			if(login(&myuser)!=NULL){
+				readFile(&myuser);
+			}
+		}else{
+			printf("invalid input! try again\n");
+		}
+		printf("\n\nPress 1 to make an account.\n");
+		printf("Press 2 to Sign in to access Some Files.\n");
+		printf("Press ctrl+D to exit.\n");
 	}
+	printf("EOF entered, exiting\n");
 	return 0;
 } 
 
