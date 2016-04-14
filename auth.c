@@ -8,7 +8,7 @@
 
 
 
-#define SALTING 0
+#define SALTING 1
 #define SALT_LEN 10
 
 typedef struct {
@@ -17,6 +17,7 @@ char pw[100];
 } user;
 
 char* record(char* data,char* dest);
+int verify(char* hash,char* salt,char* pw);
 /*
 //clean newline
 void clean(char* str) {
@@ -102,18 +103,20 @@ int isUser(user* usr){
 				printf("password: %s\n",pw);
 			 */
 				if(SALTING){
-				char dest[256];
-				strcat(line,record(usr->pw,dest));
-				strcat(line,"\n");
+					if ((strcmp(usr->name,fields[0])==0)&&(verify(fields[1],fields[2],usr->pw)==1)){
+						fclose(fp);
+						return 0;
+					}
 				}else{
-					strcat(line,usr->pw);
-					strcat(line,"\n");
+					if ((strcmp(usr->name,fields[0])==0)&&(strcmp(usr->pw,fields[1])==0)){
+						fclose(fp);
+						return 0;
+					}
 				}
 
-			if ((strcmp(usr->name,fields[0])==0)&&(strcmp(usr->pw,fields[1])==0)){
-				fclose(fp);
-				return 0;
-			}
+
+
+			
 		}
 	}
 	if(feof(fp)){
@@ -419,6 +422,26 @@ char* hash(char buf[SHA_DIGEST_LENGTH*2],unsigned char temp[SHA_DIGEST_LENGTH],c
     return buf;
 }
 
+//return 1 if hash is verified
+//return 0 if no match
+int verify(char* shash,char* salt,char* pw){
+	//printf("verifying password: %s\n",pw);
+	
+	//printf("verifying hash: %s\n",shash);
+	//printf("verifying salt: %s\n",salt);
+	
+	char buf[SHA_DIGEST_LENGTH*2];
+	unsigned char temp[SHA_DIGEST_LENGTH];
+	
+	hash(buf,temp,strcat(salt,pw));
+	//printf("produced hash: %s\n",buf);
+	if(strcmp(buf,shash)==0){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
 
 char* record(char* data,char* dest){
 	char randl[256];
@@ -426,20 +449,26 @@ char* record(char* data,char* dest){
 	randStr(randl,&siz);
 	char salt[256];
 	strcpy(salt,randl);
-	printf("salt: %s\n",salt);
+	//printf("salt: %s\n",salt);
+	
 	char buf[SHA_DIGEST_LENGTH*2];
 	unsigned char temp[SHA_DIGEST_LENGTH];
 	hash(buf,temp,strcat(randl,data));
-	printf("prepending to %s: %s\n",data,randl);
-	printf("hash of '%s': %s \n",randl,buf);
+
+	//printf("prepending to %s: %s\n",data,randl);
+	//printf("hash of '%s': %s \n",randl,buf);
+	strcat(buf,":");
 	return strcpy(dest,strcat(buf,salt));
 }
+
+
+
 
 /*
 char* getSalt(char* line){
 
 }
-*/
+
 
 int main(){
 	char data[] = "Hello wordl";
@@ -449,22 +478,17 @@ int main(){
 
 	printf("%s\n",dest );
 
+	printf("dest[5]: %c\n",dest[5]);
+
 	//char decode[] = "bc67a1096e92a9556bea72b6e182314c32a8ca5cbc67a1096e92a9556bea72b6e182314c32a8ca5c!1\\*{00wKL";
 
 	printf("sizeof decode: %d\n",(int)strlen(dest));
 
-	int len = sizeof(dest);
-	int i;
-	for(i=len-1;i>=len-1-SALT_LEN;i--){
-		printf("%c\n",dest[i]);
-	}
-
-
 	return 0;
 }
+*/
 
 
-/*
 
 int main(){
 	printf("Welcome to Some Files, Inc!\n");
@@ -497,7 +521,6 @@ int main(){
 
 
 
-*/
 
 
 
