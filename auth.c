@@ -3,13 +3,21 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <time.h>
+#include <openssl/sha.h>
+
+
+
+#define SALTING 0
+#define SALT_LEN 10
 
 typedef struct {
 char name[100];
 char pw[100];
 } user;
 
-
+char* record(char* data,char* dest);
+/*
 //clean newline
 void clean(char* str) {
 	int i;
@@ -20,6 +28,7 @@ void clean(char* str) {
 		}
 	}
 }
+*/
 
 //parse string by delim.
 //if there are multiple sequential delims, empty string fields are created for each delim.
@@ -92,6 +101,15 @@ int isUser(user* usr){
 				printf("name: %s\n",name);
 				printf("password: %s\n",pw);
 			 */
+				if(SALTING){
+				char dest[256];
+				strcat(line,record(usr->pw,dest));
+				strcat(line,"\n");
+				}else{
+					strcat(line,usr->pw);
+					strcat(line,"\n");
+				}
+
 			if ((strcmp(usr->name,fields[0])==0)&&(strcmp(usr->pw,fields[1])==0)){
 				fclose(fp);
 				return 0;
@@ -338,8 +356,16 @@ int addUser(user* usr){
 	}
 	strcat(line,usr->name);
 	strcat(line,":");
-	strcat(line,usr->pw);
-	strcat(line,"\n");
+
+	if(SALTING){
+		char dest[256];
+		strcat(line,record(usr->pw,dest));
+		strcat(line,"\n");
+	}else{
+		strcat(line,usr->pw);
+		strcat(line,"\n");
+	}
+	
 	
 	fputs(line,fp);
 	fclose(fp);
@@ -369,7 +395,76 @@ int mkUser(user* usr){
 }
 
 
+char* randStr(char* str,int* len){
+	srand(time(NULL));
+	int min = 33;
+	int max = 126;
+	int i;
+	for(i=0;i<*len;i++){
+		str[i] = (rand() % (max-min)) + min;
+	}
+	str[i] = '\0';
+	return str;
+}
 
+
+char* hash(char buf[SHA_DIGEST_LENGTH*2],unsigned char temp[SHA_DIGEST_LENGTH],char* data){
+	memset(buf, 0x0, SHA_DIGEST_LENGTH*2);
+    memset(temp, 0x0, SHA_DIGEST_LENGTH);
+    SHA1((unsigned char *)data, strlen(data), temp);
+    int i;
+    for (i=0; i < SHA_DIGEST_LENGTH; i++) {
+        sprintf((char*)&(buf[i*2]), "%02x", temp[i]);
+    }
+    return buf;
+}
+
+
+char* record(char* data,char* dest){
+	char randl[256];
+	int siz=SALT_LEN;
+	randStr(randl,&siz);
+	char salt[256];
+	strcpy(salt,randl);
+	printf("salt: %s\n",salt);
+	char buf[SHA_DIGEST_LENGTH*2];
+	unsigned char temp[SHA_DIGEST_LENGTH];
+	hash(buf,temp,strcat(randl,data));
+	printf("prepending to %s: %s\n",data,randl);
+	printf("hash of '%s': %s \n",randl,buf);
+	return strcpy(dest,strcat(buf,salt));
+}
+
+/*
+char* getSalt(char* line){
+
+}
+*/
+
+int main(){
+	char data[] = "Hello wordl";
+	char dest[256];
+
+	record(data,dest);
+
+	printf("%s\n",dest );
+
+	//char decode[] = "bc67a1096e92a9556bea72b6e182314c32a8ca5cbc67a1096e92a9556bea72b6e182314c32a8ca5c!1\\*{00wKL";
+
+	printf("sizeof decode: %d\n",(int)strlen(dest));
+
+	int len = sizeof(dest);
+	int i;
+	for(i=len-1;i>=len-1-SALT_LEN;i--){
+		printf("%c\n",dest[i]);
+	}
+
+
+	return 0;
+}
+
+
+/*
 
 int main(){
 	printf("Welcome to Some Files, Inc!\n");
@@ -402,7 +497,7 @@ int main(){
 
 
 
-
+*/
 
 
 
