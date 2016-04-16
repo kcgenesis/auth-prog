@@ -78,8 +78,9 @@ void parse(char* str, const char* delim,char fields[10][100]){
 
 
 
-//return 0 if user
+//return 0 if user,pw match
 //return 1 if no match
+//return 2 if username match
 int isUser(user* usr){
 	FILE* fp;
 	fp = fopen("users.txt","r");
@@ -106,6 +107,9 @@ int isUser(user* usr){
 					if ((strcmp(usr->name,fields[0])==0)&&(verify(fields[1],fields[2],usr->pw)==1)){
 						fclose(fp);
 						return 0;
+					}else if(strcmp(usr->name,fields[0])==0){
+						fclose(fp);
+						return 2;
 					}
 				}else{
 					if ((strcmp(usr->name,fields[0])==0)&&(strcmp(usr->pw,fields[1])==0)){
@@ -133,8 +137,8 @@ int isUser(user* usr){
 //fill usr struct with usr info
 void enterinfo(user* usr){
 	int valid=0;
-	while(valid==0){
-		printf("Enter name!\n");
+	while (valid==0){
+		printf("Enter name:\n");
 		fgets(usr->name,sizeof(usr->name),stdin);
 		strtok(usr->name,"\n");
 		//printf("Username length: %d\n",(int)strlen(usr->name));
@@ -143,10 +147,8 @@ void enterinfo(user* usr){
 		}else if(strlen(usr->name)>8){
 			printf("Username length %d too long! try again\n",(int)strlen(usr->name));
 		}else {
-			//printf("Enter password:\n");
-   			strcpy(usr->pw,getpass("Enter password:\n"));
+			strcpy(usr->pw,getpass("Enter password:\n"));
 			strtok(usr->pw,"\n");
-			//printf("Password length: %d\n",(int)strlen(usr->pw));
 			if(strlen(usr->pw)==0){
 				printf("No input! try again\n");
 			}else{
@@ -164,16 +166,7 @@ user* login(user* usr){
 	int tries=1;
 	int auth = 0;
 	while((tries <= 3)&&(auth==0)){	
-		/*
-			puts(name);
-			turn echo off if possible
-			ncurses?
-			http://forums.fedoraforum.org/showthread.php?t=270335
-			examples
-			http://www.cplusplus.com/articles/E6vU7k9E/		
-		*/
 		enterinfo(usr);
-
 		if (isUser(usr)==0){
 			auth=1;
 			break;
@@ -380,11 +373,12 @@ int addUser(user* usr){
 //return 1 if usr already exists
 //return 0 if usr created successfully
 //return 2 if error
+//duplicate usernames are not allowed
 int mkUser(user* usr){
 	enterinfo(usr);	
 	int test = isUser(usr);
-	if(test==0){
-		printf("This user already exists! Exiting.\n");
+	if((test==0)||(test==2)){
+		printf("A user with this name already exists! Exiting.\n");
 		return 1;
 	}else if(test==1){
 		addUser(usr);
@@ -397,7 +391,7 @@ int mkUser(user* usr){
 	}
 }
 
-
+//generate random string length n for salt
 char* randStr(char* str,int* len){
 	srand(time(NULL));
 	int min = 33;
@@ -410,7 +404,7 @@ char* randStr(char* str,int* len){
 	return str;
 }
 
-
+//generate SHA1 hash
 char* hash(char buf[SHA_DIGEST_LENGTH*2],unsigned char temp[SHA_DIGEST_LENGTH],char* data){
 	memset(buf, 0x0, SHA_DIGEST_LENGTH*2);
     memset(temp, 0x0, SHA_DIGEST_LENGTH);
@@ -442,7 +436,7 @@ int verify(char* shash,char* salt,char* pw){
 	}
 }
 
-
+//add hashed user to record.	
 char* record(char* data,char* dest){
 	char randl[256];
 	int siz=SALT_LEN;
@@ -507,6 +501,8 @@ int main(){
 		}else if(strcmp(instr,"2")==0){
 			if(login(&myuser)!=NULL){
 				readFile(&myuser);
+			}else{
+				break;
 			}
 		}else{
 			printf("invalid input! try again\n");
@@ -516,6 +512,8 @@ int main(){
 		printf("Press ctrl+D to exit.\n");
 	}
 	printf("EOF entered, exiting\n");
+
+	
 	return 0;
 } 
 

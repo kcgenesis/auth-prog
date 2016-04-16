@@ -9,6 +9,51 @@ bobby:pwbobby
 alice:pwalice
 ----------------end users.txt----------------
 
+
+test case 0: Account creation, input checking
+
+>only usernames below length 9 should be accepted
+>empty usernames should not be accepted
+>empty passwords should not be accepted
+
+
+----------------begin stdout----------------
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+1
+Enter name:
+asdfasdff
+Username length 9 too long! try again
+Enter name:
+asdfasdf
+Enter password:
+
+No input! try again
+Enter name:
+asdfasdf 
+Enter password:
+
+User added successfully!
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+----------------end stdout----------------
+
+
+
+test case 1: login input checking
+>only usernames below length 9 should be accepted
+>empty usernames should not be accepted
+>empty passwords should not be accepted
+>3 tries maximum, before shut out to main menu
+
+
+
+
 test case 1: very wrong logins: input checking
 
 INPUT:
