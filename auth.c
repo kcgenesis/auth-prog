@@ -153,7 +153,8 @@ int enterinfo(user* usr,int mode){
 			printf("Username length %d too long! try again\n",(int)strlen(usr->name));
 		}else{
 			if(mode==0){
-				if(isUser(usr)==2){
+				int test = isUser(usr);
+				if((test==2)||(test==0)){
 					printf("Username '%s' already taken! try again\n",usr->name);
 				}else{
 					strcpy(usr->pw,getpass("Enter password:\n"));
@@ -342,7 +343,7 @@ int newlined(char* fname){
 		}else{
 			nlflag=1;
 		}
-		printf("nlflag: %d\n",nlflag);
+		//printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);
@@ -411,6 +412,7 @@ int addUser(user* usr){
 //duplicate usernames are not allowed
 int mkUser(user* usr){
 	if(enterinfo(usr,0)==1){
+		printf("EOF read: exiting to main menu\n");
 		return 1;
 	}else{
 		addUser(usr);
@@ -496,9 +498,7 @@ int main(){
 		if(strcmp(instr,"\n")==0){
 			printf("No input! try again\n");
 		}else if(strcmp(instr,"1")==0){
-			if(mkUser(&myuser)!=0){
-				break;
-			}
+			if(mkUser(&myuser)!=0);
 		}else if(strcmp(instr,"2")==0){
 			if(login(&myuser)!=NULL){
 				readFile(&myuser);

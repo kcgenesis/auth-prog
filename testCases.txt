@@ -22,43 +22,28 @@ EOF entered, exiting
 
 ----------------end stdout----------------
 
-
+______________________________________________________________________________________________________________________________________________________________________________
 test case 1: Account creation, input checking
 
->only usernames up to length 8 should be accepted
->empty usernames should not be accepted
->empty passwords should not be accepted
->No duplicate usernames allowed
+>usernames up to 8 char long should be accepted
+>zero-length passwords should not be accepted
+>
 
 ----------------users.txt initial,begin----------------
-supa:e2828ef1b530fbeeb6e672988c63f54908f6aa70:u$wb6WuD>'
-user1:b86b8726a623e47bbda5f988e5142022af6150aa:gn3/ej]QC|
-
 ----------------users.txt initial,end----------------
 
 
 ----------------begin stdout----------------
-Welcome to Some Files, Inc!
-Press 1 to make an account.
-Press 2 to Sign in to access Some Files.
-Press ctrl+D to exit.
-1
-Enter name:
+Enter name (ctrl+D to exit):
 asdfasdff
 Username length 9 too long! try again
-Enter name:
+Enter name (ctrl+D to exit):
 asdfasdf
 Enter password:
 
 No input! try again
-Enter name:
-supa    
-Username 'supa' already taken! try again
-Enter name:
-user1
-Username 'user1' already taken! try again
-Enter name:
-asdfasdf 
+Enter name (ctrl+D to exit):
+supa
 Enter password:
 
 User added successfully!
@@ -67,7 +52,24 @@ User added successfully!
 Press 1 to make an account.
 Press 2 to Sign in to access Some Files.
 Press ctrl+D to exit.
-EOF entered, exiting
+1
+Enter name (ctrl+D to exit):
+user1
+Enter password:
+
+User added successfully!
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+1
+Enter name (ctrl+D to exit):
+supa
+Username 'supa' already taken! try again
+Enter name (ctrl+D to exit):
+user1
+Enter password:
 ----------------end stdout----------------
 
 
@@ -81,7 +83,7 @@ asdfasdf:e37ec527a152b391cfaf381b629215cf092b2a50:$'hv]S`eCW
 
 
 
-
+______________________________________________________________________________________________________________________________________________________________________________
 
 test case 2: login input checking
 >only usernames up to length 8 should be accepted
@@ -125,7 +127,24 @@ test case 3: login 3-try VALID INPUT limit
 
 ----------------end stdout----------------
 
+______________________________________________________________________________________________________________________________________________________________________________
 
+
+
+
+
+
+
+
+______________________________________________________________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+______________________________________________________________________________________________________________________________________________________________________________
 
 
 
