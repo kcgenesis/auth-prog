@@ -206,7 +206,6 @@ user* login(user* usr){
 	}
 	if(auth==0){
 		usr = NULL; 
-		printf("3 tries used: exiting\n");
 	}
 	return usr;
 }
@@ -492,6 +491,7 @@ int main(){
 	printf("Press ctrl+D to exit.\n");
 	char instr[256];
 	user myuser;
+	int tries=0;
 	while(fgets(instr,sizeof(instr),stdin)){
 		strtok(instr,"\n");
 		//printf("Username length: %d\n",(int)strlen(instr));
@@ -503,6 +503,7 @@ int main(){
 			if(login(&myuser)!=NULL){
 				readFile(&myuser);
 			}else{
+				tries++;
 				break;
 			}
 		}else{
@@ -512,7 +513,12 @@ int main(){
 		printf("Press 2 to Sign in to access Some Files.\n");
 		printf("Press ctrl+D to exit.\n");
 	}
-	printf("EOF entered, exiting\n");
+	if(tries==0){
+		printf("EOF entered, exiting\n");
+	}else{
+		printf("3 tries used: exiting\n");
+	}
+	
 
 	
 	return 0;

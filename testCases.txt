@@ -30,10 +30,16 @@ test case 1: Account creation, input checking
 >
 
 ----------------users.txt initial,begin----------------
+
 ----------------users.txt initial,end----------------
 
 
 ----------------begin stdout----------------
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+1
 Enter name (ctrl+D to exit):
 asdfasdff
 Username length 9 too long! try again
@@ -69,49 +75,8 @@ supa
 Username 'supa' already taken! try again
 Enter name (ctrl+D to exit):
 user1
-Enter password:
-----------------end stdout----------------
-
-
-----------------users.txt final,begin----------------
-supa:e2828ef1b530fbeeb6e672988c63f54908f6aa70:u$wb6WuD>'
-user1:b86b8726a623e47bbda5f988e5142022af6150aa:gn3/ej]QC|
-asdfasdf:e37ec527a152b391cfaf381b629215cf092b2a50:$'hv]S`eCW
-
-----------------users.txt final,end----------------
-
-
-
-
-______________________________________________________________________________________________________________________________________________________________________________
-
-test case 2: login input checking
->only usernames up to length 8 should be accepted
->empty usernames should not be accepted
->empty passwords should not be accepted
-
-----------------begin stdout----------------
-Welcome to Some Files, Inc!
-Press 1 to make an account.
-Press 2 to Sign in to access Some Files.
-Press ctrl+D to exit.
-2
-Enter name:
-asdfasdfasdf
-Username length 12 too long! try again
-Enter name:
-asdfasdff
-Username length 9 too long! try again
-Enter name:
-asdfasdf
-Enter password:
-
-No input! try again
-Enter name:
-asdfasdf
-Enter password:
-
-enter file path (ctrl+D to exit):
+Username 'user1' already taken! try again
+Enter name (ctrl+D to exit):
 EOF read: exiting to main menu
 
 
@@ -119,98 +84,94 @@ Press 1 to make an account.
 Press 2 to Sign in to access Some Files.
 Press ctrl+D to exit.
 EOF entered, exiting
-----------------end stdout----------------
-
-
-test case 3: login 3-try VALID INPUT limit
-----------------begin stdout----------------
 
 ----------------end stdout----------------
 
-______________________________________________________________________________________________________________________________________________________________________________
 
+----------------begin users.txt final----------------
+supa:72c4f2effce2187e8fc66b0f136fcea326c08238:f-le&5>[{)
+user1:468ba1b997f6c9e53190692ae4bf81c692be0418:CUv5w"$3Y(
 
-
-
-
-
-
-
-______________________________________________________________________________________________________________________________________________________________________________
-
-
-
-
-
+----------------end users.txt final----------------
 
 
 ______________________________________________________________________________________________________________________________________________________________________________
 
 
+test case 2: login input checking
+>only usernames up to length 8 should be accepted
+>empty usernames should not be accepted
+>empty passwords should not be accepted
 
+----------------users.txt----------------
+supa:72c4f2effce2187e8fc66b0f136fcea326c08238:f-le&5>[{)
+user1:468ba1b997f6c9e53190692ae4bf81c692be0418:CUv5w"$3Y(
 
+----------------users.txt----------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->3 tries maximum, before shut out to main menu
-
-
-
-
-test case 1: very wrong logins: input checking
-
-INPUT:
->excessively long name
-
-aaaaaaaa
-
->borderline good name
-aaaaaaaa
->no password
-
->asdf's to exit
-
-OUTPUT:
 ----------------begin stdout----------------
-Enter name!
-aaaaaaaaa
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2  
+Enter name (ctrl+D to exit):
+asdfasdff
 Username length 9 too long! try again
-Enter name!
-aaaaaaaa
+Enter name (ctrl+D to exit):
+        
+No input! try again
+Enter name (ctrl+D to exit):
+asdfasdf
 Enter password:
 
 No input! try again
-Enter name!
+Enter name (ctrl+D to exit):
+asdfasdf
+Enter password:
+
+Login incorrect!
+Enter name (ctrl+D to exit):
+supa
+Enter password:
+
+Enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+EOF entered, exiting
+
+----------------end stdout----------------
+
+______________________________________________________________________________________________________________________________________________________________________________
+
+test case 3: login 3-try VALID input limit
+----------------begin users.txt----------------
+supa:72c4f2effce2187e8fc66b0f136fcea326c08238:f-le&5>[{)
+user1:468ba1b997f6c9e53190692ae4bf81c692be0418:CUv5w"$3Y(
+
+----------------end users.txt----------------
+
+----------------begin stdout----------------
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
 asdf
 Enter password:
 
 Login incorrect!
-Enter name!
+Enter name (ctrl+D to exit):
 asdf
 Enter password:
 
 Login incorrect!
-Enter name!
+Enter name (ctrl+D to exit):
 asdf
 Enter password:
 
@@ -218,60 +179,48 @@ Login incorrect!
 3 tries used: exiting
 ----------------end stdout----------------
 
-test case 2: wrong logins
+______________________________________________________________________________________________________________________________________________________________________________
 
-INPUT:
->wrong username
-kirk
-pwbill
-kirk
-pwalice
->valid username
->wrong pw
-bill
-pwalice
+test case 4: file name input checking
 
-OUTPUT:
-----------------begin stdout----------------
-Enter name!
-kirk
+----------------begin auth.txt----------------
+PERMIT::file1.txt
+DENY:bobby:
+PERMIT:joe:
+----------------end auth.txt----------------
+
+----------------begin users.txt----------------
+alice:4170408dc14b726b2ff7994cc74b1c0e45005755:]oufQk$0!w
+bobby:413dabe6fa12dc21d5a3ee19a7e1cce4ca1f7d1a:pyH{p,xiGt
+joe:0d293f4ffe1a86a5b89bc25fe51975466ed7dd46:cJ=-v@-'}s
+----------------end users.txt----------------
+
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
+user1
 Enter password:
 
-Login incorrect!
-Enter name!
-kirk
-Enter password:
-
-Login incorrect!
-Enter name!
-bill
-Enter password:
-
-Login incorrect!
-3 tries used: exiting
-----------------end stdout----------------
-
-test case 3: file name input checking
-
-----------------begin stdout----------------
-Enter name!
-alice
-Enter password:
-
-enter file path:
+Enter file path (ctrl+D to exit):
 asdf
 the file 'asdf' does not exist! try again
 ff
 the file 'ff' does not exist! try again
 aa
 the file 'aa' does not exist! try again
+EOF read: exiting to main menu
 
-no input! try again
-EOF read: exiting
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+EOF entered, exiting
+
 ----------------end stdout----------------
-
-
-
+______________________________________________________________________________________________________________________________________________________________________________
 
 test case 4: contradiction-free ACL
 ----------------begin auth.txt----------------
@@ -285,96 +234,92 @@ EXPECTATION:
 Alice should be able to access file1.txt.  She should not be able to access file2.txt.
 Bobby should be able to access file2.txt.  He should not be able to access file1.txt.
 Since file3.txt is not mentioned in the ACL, neither Bobby nor Alice can access it.
-Joe and Bill should be able to access no files.
+Joe should be able to access no files.
 
 PROGRAM OUTPUT:
-Logging in as Alice:
+Logging in as Alice, Bobby, then Joe:
 ----------------begin stdout----------------
-Enter name!
-alice
-Enter password:
-
-enter file path:
-file1.txt
-Access to file file1.txt denied
-enter file path:
-file2.txt
---------BEGIN 'file2.txt'--------
-the content of file2the content of file2
-the content of file2the content of file2
-the content of file2the content of file2
---------END 'file2.txt'--------
-enter file path:
-file3.txt
-Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
-
-
-
-Logging in as Bobby:
-----------------begin stdout----------------
-Enter name!
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
 bobby
 Enter password:
 
-enter file path:
+Enter file path (ctrl+D to exit):
 file1.txt
 --------BEGIN 'file1.txt'--------
 the content of file1the content of file1
 the content of file1the content of file1
 the content of file1the content of file1
 --------END 'file1.txt'--------
-enter file path:
+enter file path (ctrl+D to exit):
 file2.txt
 Access to file file2.txt denied
-enter file path:
+enter file path (ctrl+D to exit):
 file3.txt
 Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
 
-Logging in as Joe
 
-----------------begin stdout----------------
-Enter name!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
+alice
+Enter password:
+
+Enter file path (ctrl+D to exit):
+file1.txt
+Access to file file1.txt denied
+enter file path (ctrl+D to exit):
+file2.txt
+--------BEGIN 'file2.txt'--------
+the content of file2the content of file2
+the content of file2the content of file2
+the content of file2the content of file2
+--------END 'file2.txt'--------
+enter file path (ctrl+D to exit):
+file3.txt
+Access to file file3.txt denied
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
 joe
 Enter password:
 
-enter file path:
+Enter file path (ctrl+D to exit):
 file1.txt
 Access to file file1.txt denied
-enter file path:
+enter file path (ctrl+D to exit):
 file2.txt
 Access to file file2.txt denied
-enter file path:
+enter file path (ctrl+D to exit):
 file3.txt
 Access to file file3.txt denied
-enter file path:
-EOF read: exiting
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+EOF entered, exiting
+
 ----------------end stdout----------------
 
-Logging in as Bill
+_________________________________________________________________________________________________________________________________________________________________
 
-----------------begin stdout----------------
-Enter name!
-bill
-Enter password:
-
-enter file path:
-file1.txt
-Access to file file1.txt denied
-enter file path:
-file2.txt
-Access to file file2.txt denied
-enter file path:
-file3.txt
-Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
 
 
 test case 5: wildcards & first-rule precedent
@@ -382,118 +327,136 @@ test case 5: wildcards & first-rule precedent
 --------begin auth.txt--------
 PERMIT::file1.txt
 DENY:bobby:
-PERMIT:bill:
+PERMIT:joe:
 --------end auth.txt--------
 
 EXPECTATION:
 Alice should be able to access file1.txt, but not file2.txt or file3.txt.
 Joe should be able to access file1.txt, but not file2.txt or file3.txt.
 Bobby should be able to access file1.txt (since the first rule takes precedence), but he should not be able to access file2.txt and file3.txt.
-Bill should be able to access file1.txt, file2.txt, and file3.txt.
 
 PROGRAM OUTPUT:
 
-Logging in as Alice:
+Logging in as Alice, Joe, then Bobby:
 ----------------begin stdout----------------
-Enter name!
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
 alice
 Enter password:
 
-enter file path:
+Enter file path (ctrl+D to exit):
 file1.txt
 --------BEGIN 'file1.txt'--------
 the content of file1the content of file1
 the content of file1the content of file1
 the content of file1the content of file1
 --------END 'file1.txt'--------
-enter file path:
+enter file path (ctrl+D to exit):
 file2.txt
 Access to file file2.txt denied
-enter file path:
+enter file path (ctrl+D to exit):
 file3.txt
 Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
 
-Logging in as Joe:
-----------------begin stdout----------------
-Enter name!
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
 joe
 Enter password:
 
-enter file path:
+Enter file path (ctrl+D to exit):
 file1.txt
 --------BEGIN 'file1.txt'--------
 the content of file1the content of file1
 the content of file1the content of file1
 the content of file1the content of file1
 --------END 'file1.txt'--------
-enter file path:
-file2.txt
-Access to file file2.txt denied
-enter file path:
-file3.txt
-Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
-
-
-Logging in as Bobby:
-----------------begin stdout----------------
-Enter name!
-bobby
-Enter password:
-
-enter file path:
-file1.txt
---------BEGIN 'file1.txt'--------
-the content of file1the content of file1
-the content of file1the content of file1
-the content of file1the content of file1
---------END 'file1.txt'--------
-enter file path:
-file2.txt
-Access to file file2.txt denied
-enter file path:
-file3.txt
-Access to file file3.txt denied
-enter file path:
-EOF read: exiting
-----------------end stdout----------------
-
-
-Logging in as Bill:
-----------------begin stdout----------------
-Enter name!
-bill
-Enter password:
-
-enter file path:
-file1.txt
---------BEGIN 'file1.txt'--------
-the content of file1the content of file1
-the content of file1the content of file1
-the content of file1the content of file1
---------END 'file1.txt'--------
-enter file path:
+enter file path (ctrl+D to exit):
 file2.txt
 --------BEGIN 'file2.txt'--------
 the content of file2the content of file2
 the content of file2the content of file2
 the content of file2the content of file2
 --------END 'file2.txt'--------
-enter file path:
+enter file path (ctrl+D to exit):
 file3.txt
 --------BEGIN 'file3.txt'--------
 the content of file3the content of file3
 the content of file3the content of file3
 the content of file3the content of file3
 --------END 'file3.txt'--------
-enter file path:
-EOF read: exiting
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name (ctrl+D to exit):
+bobby
+Enter password:
+
+Enter file path (ctrl+D to exit):
+file1.txt
+--------BEGIN 'file1.txt'--------
+the content of file1the content of file1
+the content of file1the content of file1
+the content of file1the content of file1
+--------END 'file1.txt'--------
+enter file path (ctrl+D to exit):
+file2.txt
+Access to file file2.txt denied
+enter file path (ctrl+D to exit):
+file3.txt
+Access to file file3.txt denied
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+EOF entered, exiting
+
 ----------------end stdout----------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
