@@ -3,7 +3,7 @@ Kirk Cameron
 
 
 
-test case 0: main menu input checking
+test case 1: main menu input checking
 
 >invalid input should return user to main menu
 ----------------begin stdout----------------
@@ -23,7 +23,7 @@ EOF entered, exiting
 ----------------end stdout----------------
 
 ______________________________________________________________________________________________________________________________________________________________________________
-test case 1: Account creation, input checking
+test case 2: Account creation, input checking
 
 >usernames up to 8 char long should be accepted
 >zero-length passwords should not be accepted
@@ -98,7 +98,7 @@ user1:468ba1b997f6c9e53190692ae4bf81c692be0418:CUv5w"$3Y(
 ______________________________________________________________________________________________________________________________________________________________________________
 
 
-test case 2: login input checking
+test case 3: login input checking
 >only usernames up to length 8 should be accepted
 >empty usernames should not be accepted
 >empty passwords should not be accepted
@@ -148,7 +148,7 @@ EOF entered, exiting
 
 ______________________________________________________________________________________________________________________________________________________________________________
 
-test case 3: login 3-try VALID input limit
+test case 4: login 3-try VALID input limit
 ----------------begin users.txt----------------
 supa:72c4f2effce2187e8fc66b0f136fcea326c08238:f-le&5>[{)
 user1:468ba1b997f6c9e53190692ae4bf81c692be0418:CUv5w"$3Y(
@@ -181,7 +181,7 @@ Login incorrect!
 
 ______________________________________________________________________________________________________________________________________________________________________________
 
-test case 4: file name input checking
+test case 5: file name input checking
 
 ----------------begin auth.txt----------------
 PERMIT::file1.txt
@@ -222,7 +222,7 @@ EOF entered, exiting
 ----------------end stdout----------------
 ______________________________________________________________________________________________________________________________________________________________________________
 
-test case 4: contradiction-free ACL
+test case 6: contradiction-free ACL
 ----------------begin auth.txt----------------
 PERMIT:bobby:file1.txt
 DENY:alice:file1.txt
@@ -322,7 +322,7 @@ ________________________________________________________________________________
 
 
 
-test case 5: wildcards & first-rule precedent
+test case 7: wildcards & first-rule precedent
 
 --------begin auth.txt--------
 PERMIT::file1.txt

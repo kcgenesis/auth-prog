@@ -18,18 +18,7 @@ char pw[100];
 
 char* record(char* data,char* dest);
 int verify(char* hash,char* salt,char* pw);
-/*
-//clean newline
-void clean(char* str) {
-	int i;
-	for(i=0;i<sizeof str;i++){
-		if(str[i]=='\n'){
-			printf("removing newline\n");
-			str[i] = '\0';	
-		}
-	}
-}
-*/
+
 
 //parse string by delim.
 //if there are multiple sequential delims, empty string fields are created for each delim.
@@ -46,7 +35,6 @@ void parse(char* str, const char* delim,char fields[10][100]){
 	int j=0;//word char
 	int k=0;//wordnum
 	int STATE=0;
-	//printf("the length is %d\n",strlen(str));
 
 	for(i=0;i<strlen(str);i++){
 		if(str[i]==*delim){	
@@ -67,12 +55,7 @@ void parse(char* str, const char* delim,char fields[10][100]){
 			}
 		}
 	}
-	/*
-		int m;
-		for(m=0;m<3;m++){
-			printf("field %d: %s\n",m+1,fields[m]);	
-		}
-	*/
+
 }
 
 
@@ -94,15 +77,7 @@ int isUser(user* usr){
 			const char d = ':';
 			char fields[10][100];
 			parse(line,&d,fields);
-			
-			/* 
-				printf("Does it match?\n");
-				printf("name: %s\n",readName);
-				printf("password: %s\n",readPw);
-				printf("vs\n");
-				printf("name: %s\n",name);
-				printf("password: %s\n",pw);
-			 */
+
 				if(SALTING){
 					if ((strcmp(usr->name,fields[0])==0)&&(verify(fields[1],fields[2],usr->pw)==1)){
 						fclose(fp);
@@ -143,9 +118,9 @@ int enterinfo(user* usr,int mode){
 	int valid=0;
 	printf("Enter name (ctrl+D to exit):\n");
 	while (fgets(usr->name,sizeof(usr->name),stdin)){
-		//fgets(usr->name,sizeof(usr->name),stdin);
+
 		strtok(usr->name,"\n");
-		//printf("Username length: %d\n",(int)strlen(usr->name));
+
 		
 		if(strcmp(usr->name,"\n")==0){
 			printf("No input! try again\n");
@@ -220,34 +195,18 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 			const char d[] = ":\r\n";
 			char fields[10][100];
 			parse(line,d,fields);
-			/*
-			for(i=0;i<3;i++){
-				printf("field[%d]: %s\n",i,fields[i]);
-			}
-			*/
 			//no permission specified -> deny permission
-			//first rule parsed is the rule which will be applied
-			
 			if (strlen(fields[2])==0){
-				//printf("USER wildcard detected\n");
 			}else if(strlen(fields[1])==0){
 
 			}
-
-
-
 			if ((strcmp(usr->name,fields[1])==0)||(strlen(fields[1])==0)){
-				//printf("matched username/wildcard\n");
 				if ((strcmp(fname,fields[2])==0)||(strlen(fields[2])==0)){
-					//printf("matched filename/wildcard\n");
 					if(strcmp("PERMIT",fields[0])==0){
-						//printf("permitted\n");
 						return 0;
 					}else if(strcmp("DENY",fields[0])==0){
-						//printf("denied\n");
 						return 1;
 					}else{
-						//printf("No permission found: denied\n");
 						return 1;
 					}
 				}
@@ -256,8 +215,6 @@ int isAuthorized(user* usr,char* fname,FILE* fp){
 		}
 	}
 	if(feof(fp)){
-			//printf("end of file reached successsfuly\n");
-			//printf("not found in ACL: denied\n");
 			return 1;
 	}else{
 		fprintf(stderr,"read error\n");
@@ -448,16 +405,9 @@ char* hash(char buf[SHA_DIGEST_LENGTH*2],unsigned char temp[SHA_DIGEST_LENGTH],c
 //return 1 if hash is verified
 //return 0 if no match
 int verify(char* shash,char* salt,char* pw){
-	//printf("verifying password: %s\n",pw);
-	
-	//printf("verifying hash: %s\n",shash);
-	//printf("verifying salt: %s\n",salt);
-	
 	char buf[SHA_DIGEST_LENGTH*2];
 	unsigned char temp[SHA_DIGEST_LENGTH];
-	
 	hash(buf,temp,strcat(salt,pw));
-	//printf("produced hash: %s\n",buf);
 	if(strcmp(buf,shash)==0){
 		return 1;
 	}else{
@@ -472,14 +422,9 @@ char* record(char* data,char* dest){
 	randStr(randl,&siz);
 	char salt[256];
 	strcpy(salt,randl);
-	//printf("salt: %s\n",salt);
-	
 	char buf[SHA_DIGEST_LENGTH*2];
 	unsigned char temp[SHA_DIGEST_LENGTH];
 	hash(buf,temp,strcat(randl,data));
-
-	//printf("prepending to %s: %s\n",data,randl);
-	//printf("hash of '%s': %s \n",randl,buf);
 	strcat(buf,":");
 	return strcpy(dest,strcat(buf,salt));
 }
@@ -494,7 +439,6 @@ int main(){
 	int tries=0;
 	while(fgets(instr,sizeof(instr),stdin)){
 		strtok(instr,"\n");
-		//printf("Username length: %d\n",(int)strlen(instr));
 		if(strcmp(instr,"\n")==0){
 			printf("No input! try again\n");
 		}else if(strcmp(instr,"1")==0){
