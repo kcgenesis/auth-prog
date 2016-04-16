@@ -135,26 +135,53 @@ int isUser(user* usr){
 }
 
 //fill usr struct with usr info
-void enterinfo(user* usr){
+//if mode =0, user creation mode
+//if mode=1, login mode
+//return 1 if EOF entered
+//return 0 if valid user
+int enterinfo(user* usr,int mode){
 	int valid=0;
-	while (valid==0){
-		printf("Enter name:\n");
-		fgets(usr->name,sizeof(usr->name),stdin);
+	printf("Enter name (ctrl+D to exit):\n");
+	while (fgets(usr->name,sizeof(usr->name),stdin)){
+		//fgets(usr->name,sizeof(usr->name),stdin);
 		strtok(usr->name,"\n");
 		//printf("Username length: %d\n",(int)strlen(usr->name));
+		
 		if(strcmp(usr->name,"\n")==0){
 			printf("No input! try again\n");
 		}else if(strlen(usr->name)>8){
 			printf("Username length %d too long! try again\n",(int)strlen(usr->name));
-		}else {
-			strcpy(usr->pw,getpass("Enter password:\n"));
-			strtok(usr->pw,"\n");
-			if(strlen(usr->pw)==0){
-				printf("No input! try again\n");
-			}else{
-				valid++;
+		}else{
+			if(!mode){
+				if(isUser(usr)==2){
+					printf("Username '%s' already taken! try again\n",usr->name);
+				}else{
+					strcpy(usr->pw,getpass("Enter password:\n"));
+					strtok(usr->pw,"\n");
+					if(strlen(usr->pw)==0){
+						printf("No input! try again\n");
+					}else{
+						valid=1;
+						break;
+					}
+				}
+			}else {
+				strcpy(usr->pw,getpass("Enter password:\n"));
+				strtok(usr->pw,"\n");
+				if(strlen(usr->pw)==0){
+					printf("No input! try again\n");
+				}else{
+					valid=1;
+					break;
+				}
 			}
 		}
+		printf("Enter name:\n");
+	}
+	if(valid){
+		return 0;
+	}else{
+		return 1;
 	}
 }
 
@@ -166,7 +193,7 @@ user* login(user* usr){
 	int tries=1;
 	int auth = 0;
 	while((tries <= 3)&&(auth==0)){	
-		enterinfo(usr);
+		enterinfo(usr,1);
 		if (isUser(usr)==0){
 			auth=1;
 			break;
@@ -272,7 +299,7 @@ void readFile(user* usr){
 		exit(1);
 	}
 	char line[256];
-	printf("enter file path:\n");
+	printf("Enter file path (ctrl+D to exit):\n");
 	while(fgets(line,sizeof(line),stdin)){
 		if(strlen(line)>1){
 			strtok(line,"\n");
@@ -284,7 +311,7 @@ void readFile(user* usr){
 				}else{
 					printf("Access to file %s denied\n",line);
 				}
-				printf("enter file path:\n");
+				printf("enter file path (ctrl+D to exit):\n");
 				rewind(fp);
 			}
 		}else {
@@ -308,11 +335,12 @@ int newlined(char* fname){
 	int nlflag;
 	char line[256];
 	while(fgets(line,sizeof(line),fp)){
-		if(sizeof(line)>1){ 
+		if(strlen(line)>1){ 
 			nlflag = 0;
 		}else{
 			nlflag=1;
 		}
+		//printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);
@@ -370,25 +398,18 @@ int addUser(user* usr){
 
 
 //make usr.
-//return 1 if usr already exists
+
 //return 0 if usr created successfully
-//return 2 if error
+//return 1 if exit char recieved
 //duplicate usernames are not allowed
 int mkUser(user* usr){
-	enterinfo(usr);	
-	int test = isUser(usr);
-	if((test==0)||(test==2)){
-		printf("A user with this name already exists! Exiting.\n");
+	if(enterinfo(usr,0)==1){
 		return 1;
-	}else if(test==1){
+	}else{
 		addUser(usr);
 		printf("User added successfully!\n");
-		return 0;
-	}else{
-		printf("Error: we should never get here!\n");
-		return 2;
-		exit(1);
 	}
+	return 0;
 }
 
 //generate random string length n for salt
@@ -455,35 +476,6 @@ char* record(char* data,char* dest){
 	return strcpy(dest,strcat(buf,salt));
 }
 
-
-
-
-/*
-char* getSalt(char* line){
-
-}
-
-
-int main(){
-	char data[] = "Hello wordl";
-	char dest[256];
-
-	record(data,dest);
-
-	printf("%s\n",dest );
-
-	printf("dest[5]: %c\n",dest[5]);
-
-	//char decode[] = "bc67a1096e92a9556bea72b6e182314c32a8ca5cbc67a1096e92a9556bea72b6e182314c32a8ca5c!1\\*{00wKL";
-
-	printf("sizeof decode: %d\n",(int)strlen(dest));
-
-	return 0;
-}
-*/
-
-
-
 int main(){
 	printf("Welcome to Some Files, Inc!\n");
 	printf("Press 1 to make an account.\n");
@@ -497,7 +489,9 @@ int main(){
 		if(strcmp(instr,"\n")==0){
 			printf("No input! try again\n");
 		}else if(strcmp(instr,"1")==0){
-			mkUser(&myuser);	
+			if(mkUser(&myuser)!=0){
+				break;
+			}
 		}else if(strcmp(instr,"2")==0){
 			if(login(&myuser)!=NULL){
 				readFile(&myuser);

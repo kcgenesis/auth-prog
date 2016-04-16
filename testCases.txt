@@ -1,20 +1,38 @@
 User Authorization & Access Control Program
 Kirk Cameron
 
-for all test cases:
-----------------begin users.txt----------------
-bill:pwbill
-joe:pwjoe
-bobby:pwbobby
-alice:pwalice
-----------------end users.txt----------------
 
 
-test case 0: Account creation, input checking
+test case 0: main menu input checking
 
->only usernames below length 9 should be accepted
+>invalid input should return user to main menu
+----------------begin stdout----------------
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+asdfasdff
+invalid input! try again
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+----------------end stdout----------------
+
+
+test case 1: Account creation, input checking
+
+>only usernames up to length 8 should be accepted
 >empty usernames should not be accepted
 >empty passwords should not be accepted
+>No duplicate usernames allowed
+
+----------------users.txt initial,begin----------------
+supa:e2828ef1b530fbeeb6e672988c63f54908f6aa70:u$wb6WuD>'
+user1:b86b8726a623e47bbda5f988e5142022af6150aa:gn3/ej]QC|
+
+----------------users.txt initial,end----------------
 
 
 ----------------begin stdout----------------
@@ -32,6 +50,12 @@ Enter password:
 
 No input! try again
 Enter name:
+supa    
+Username 'supa' already taken! try again
+Enter name:
+user1
+Username 'user1' already taken! try again
+Enter name:
 asdfasdf 
 Enter password:
 
@@ -41,14 +65,92 @@ User added successfully!
 Press 1 to make an account.
 Press 2 to Sign in to access Some Files.
 Press ctrl+D to exit.
+EOF entered, exiting
+----------------end stdout----------------
+
+
+----------------users.txt final,begin----------------
+supa:e2828ef1b530fbeeb6e672988c63f54908f6aa70:u$wb6WuD>'
+user1:b86b8726a623e47bbda5f988e5142022af6150aa:gn3/ej]QC|
+asdfasdf:e37ec527a152b391cfaf381b629215cf092b2a50:$'hv]S`eCW
+
+----------------users.txt final,end----------------
+
+
+
+
+
+
+test case 2: login input checking
+>only usernames up to length 8 should be accepted
+>empty usernames should not be accepted
+>empty passwords should not be accepted
+
+----------------begin stdout----------------
+Welcome to Some Files, Inc!
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+2
+Enter name:
+asdfasdfasdf
+Username length 12 too long! try again
+Enter name:
+asdfasdff
+Username length 9 too long! try again
+Enter name:
+asdfasdf
+Enter password:
+
+No input! try again
+Enter name:
+asdfasdf
+Enter password:
+
+enter file path (ctrl+D to exit):
+EOF read: exiting to main menu
+
+
+Press 1 to make an account.
+Press 2 to Sign in to access Some Files.
+Press ctrl+D to exit.
+EOF entered, exiting
+----------------end stdout----------------
+
+
+test case 3: login 3-try VALID INPUT limit
+----------------begin stdout----------------
+
 ----------------end stdout----------------
 
 
 
-test case 1: login input checking
->only usernames below length 9 should be accepted
->empty usernames should not be accepted
->empty passwords should not be accepted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 >3 tries maximum, before shut out to main menu
 
 
