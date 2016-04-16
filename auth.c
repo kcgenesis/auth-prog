@@ -152,7 +152,7 @@ int enterinfo(user* usr,int mode){
 		}else if(strlen(usr->name)>8){
 			printf("Username length %d too long! try again\n",(int)strlen(usr->name));
 		}else{
-			if(!mode){
+			if(mode==0){
 				if(isUser(usr)==2){
 					printf("Username '%s' already taken! try again\n",usr->name);
 				}else{
@@ -176,7 +176,7 @@ int enterinfo(user* usr,int mode){
 				}
 			}
 		}
-		printf("Enter name:\n");
+		printf("Enter name (ctrl+D to exit):\n");
 	}
 	if(valid){
 		return 0;
@@ -340,7 +340,7 @@ int newlined(char* fname){
 		}else{
 			nlflag=1;
 		}
-		//printf("nlflag: %d\n",nlflag);
+		printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);

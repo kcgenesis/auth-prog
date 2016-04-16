@@ -11,13 +11,15 @@ Welcome to Some Files, Inc!
 Press 1 to make an account.
 Press 2 to Sign in to access Some Files.
 Press ctrl+D to exit.
-asdfasdff
+asdfasdf
 invalid input! try again
 
 
 Press 1 to make an account.
 Press 2 to Sign in to access Some Files.
 Press ctrl+D to exit.
+EOF entered, exiting
+
 ----------------end stdout----------------
 
 
