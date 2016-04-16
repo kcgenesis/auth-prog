@@ -332,26 +332,33 @@ int newlined(char* fname){
 		fprintf(stderr, "Can't open input file users.txt!\n");
 		exit(1);
 	}
-	int nlflag;
+	int nlflag=0;
+	int n=0;
 	char line[256];
 	while(fgets(line,sizeof(line),fp)){
-		if(strlen(line)>1){ 
+		n++;
+		if((strcmp(line,"\n")==0)||(strlen(line)==0)){ 
 			nlflag = 0;
 		}else{
 			nlflag=1;
 		}
-		//printf("nlflag: %d\n",nlflag);
+		printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);
-		if(nlflag==0){
+		if(n>0){
+			if(nlflag==0){
 			return 0;
-		}else if(nlflag==1){
-			return 1;
+			}else if(nlflag==1){
+				return 1;
+			}else{
+				printf("error!\n");
+				return 2;
+			}
 		}else{
-			printf("error!\n");
-			return 2;
+			return 1; //empty file
 		}
+		
 	}else{
 		fprintf(stderr,"read error\n");
 		fclose(fp);
