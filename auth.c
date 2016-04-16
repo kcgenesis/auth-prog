@@ -176,7 +176,6 @@ user* login(user* usr){
 		} else{
 			printf("Login incorrect!\n");
 		}
-		//printf("You've used up try #%d\n\n",tries);
 		tries++;
 	}
 	if(auth==0){
@@ -299,7 +298,6 @@ int newlined(char* fname){
 		}else{
 			nlflag=1;
 		}
-		//printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);
