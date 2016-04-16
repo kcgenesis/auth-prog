@@ -340,7 +340,7 @@ int newlined(char* fname){
 		}else{
 			nlflag=1;
 		}
-		printf("nlflag: %d\n",nlflag);
+		//printf("nlflag: %d\n",nlflag);
 	}
 	if(feof(fp)){
 		fclose(fp);
@@ -375,7 +375,7 @@ int addUser(user* usr){
 	}
 	char line[256];
 	line[0] = '\0';
-	if(newlined("users.txt")){
+	if(newlined("users.txt")==0){
 		strcat(line,"\n");
 	}
 	strcat(line,usr->name);
