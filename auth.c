@@ -11,6 +11,21 @@
 #define SALTING 1
 #define SALT_LEN 10
 
+/*
+	This program implements a simplified account database which makes use of salted hashing for passwords.
+	Users can create accounts.  Duplicate account names are not allowed.
+	Once a user logs in, they can enter file paths relative to the current directory.
+	If a file file exists, and this user is authorized to access it, its contents will be printed out on the screen.
+	The user "logs out" by pressing ctrl+D.
+	Ctrl+D can also be used to exit from account creation.
+*/
+
+
+
+
+
+
+
 typedef struct {
 char name[100];
 char pw[100];
@@ -18,7 +33,6 @@ char pw[100];
 
 char* record(char* data,char* dest);
 int verify(char* hash,char* salt,char* pw);
-
 
 //parse string by delim.
 //if there are multiple sequential delims, empty string fields are created for each delim.
